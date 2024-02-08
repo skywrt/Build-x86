@@ -2,6 +2,8 @@ name: Build X86-64
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: 0 16 * * *
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -113,22 +115,12 @@ jobs:
         token: ${{ secrets.GH_TOKEN }}
         artifacts: ${{ env.FIRMWARE }}/*
         body: |
-          **This is OpenWrt Firmware for ${{ env.PRODUCT_NAME }}**
           ### 📒 固件信息
-          - 💻 这是 ${{ env.PRODUCT_NAME }} 平台使用的 OpenWrt 固件
-          - ⚽ 固件源码: ${{ env.REPO_URL }}
-          - 💝 源码分支: ${{ env.REPO_BRANCH }}
-          - 🚀 内核版本: ${{ env.KERNEL }}
           - 🌐 默认地址: 9.9.9.2
           - 🔑 默认密码: password
 
-  delete:
-    needs: [X86_64]
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: 删除运行记录
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          retain_days: 0
-          keep_minimum_runs: 0
+    - name: 删除运行记录
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        retain_days: 0
+        keep_minimum_runs: 0
