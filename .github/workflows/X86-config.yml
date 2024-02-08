@@ -70,7 +70,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         $GITHUB_WORKSPACE/diy/preset-clash-core.sh $CLASH_KERNEL
-        $GITHUB_WORKSPACE/diy/preset-adguard-core.sh $CLASH_KERNEL
         
     - name: SSH链接管理
       uses: P3TERX/ssh2actions@v1.0.0
