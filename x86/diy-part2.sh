@@ -11,7 +11,7 @@
 #
 
 # Modify default IP
-sed -i 's/192.168.1.1/192.168.1.3/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/9.9.9.2/g' package/base-files/files/bin/config_generate
 
 # Themes 主题
 rm -rf feeds/luci/themes/luci-theme-argon
@@ -46,5 +46,6 @@ function git_sparse_clone() {
   cd .. && rm -rf $repodir
 }
 
-# 科学上网插件
+# 添加额外插件
+git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
 git_sparse_clone dev https://github.com/vernesong/OpenClash luci-app-openclash
