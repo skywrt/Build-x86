@@ -47,4 +47,4 @@ function git_sparse_clone() {
 }
 
 # 添加额外插件
-git_sparse_clone https://github.com/vernesong/OpenClash luci-app-openclash
+git_sparse_clone master https://github.com/vernesong/OpenClash luci-app-openclash
