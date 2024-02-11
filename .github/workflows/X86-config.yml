@@ -16,7 +16,6 @@ env:
   CONFIG_FILE: x86/x86.config
   DIY_P1_SH: x86/diy-part1.sh
   DIY_P2_SH: x86/diy-part2.sh
-  CLASH_KERNEL: amd64
   UPLOAD_FIRMWARE: true
   CONFIG: x86
   
@@ -69,7 +68,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        $GITHUB_WORKSPACE/diy/preset-clash-core.sh $CLASH_KERNEL
+        $GITHUB_WORKSPACE/diy/preset-clash-core.sh amd64
         
     - name: SSH链接管理
       uses: P3TERX/ssh2actions@v1.0.0
