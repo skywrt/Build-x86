@@ -48,14 +48,8 @@ function merge_package(){
 function drop_package(){
     find package/ -follow -name $1 -not -path "package/custom/*" | xargs -rt rm -rf
 }
-function merge_feed(){
-    if [ ! -d "feed/$1" ]; then
-        echo >> feeds.conf.default
-        echo "src-git $1 $2" >> feeds.conf.default
-    fi
-    ./scripts/feeds update $1
-    ./scripts/feeds install -a -p $1
-}
+
+rm -rf package/custom; mkdir package/custom
 
 # 添加额外插件
 merge_package https://github.com/vernesong/OpenClash OpenClash/luci-app-openclash
