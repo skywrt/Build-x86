@@ -37,17 +37,28 @@ sed -i "s/<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%>/<%=pcdata(ver.d
 sed -i 's/os.date()/os.date("%Y年%m月%d日") .. " " .. translate(os.date("%A")) .. " " .. os.date("%X")/g' package/lean/autocore/files/x86/index.htm
 
 # Git稀疏克隆，只克隆指定目录到本地
-function git_sparse_clone() {
-  branch="$1" repourl="$2" && shift 2
-  git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
-  repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
-  cd $repodir && git sparse-checkout set $@
-  mv -f $@ ../package
-  cd .. && rm -rf $repodir
+function merge_package(){
+    repo=`echo $1 | rev | cut -d'/' -f 1 | rev`
+    pkg=`echo $2 | rev | cut -d'/' -f 1 | rev`
+    # find package/ -follow -name $pkg -not -path "package/custom/*" | xargs -rt rm -rf
+    git clone --depth=1 --single-branch $1
+    mv $2 package/custom/
+    rm -rf $repo
+}
+function drop_package(){
+    find package/ -follow -name $1 -not -path "package/custom/*" | xargs -rt rm -rf
+}
+function merge_feed(){
+    if [ ! -d "feed/$1" ]; then
+        echo >> feeds.conf.default
+        echo "src-git $1 $2" >> feeds.conf.default
+    fi
+    ./scripts/feeds update $1
+    ./scripts/feeds install -a -p $1
 }
 
 # 添加额外插件
-git_sparse_clone master https://github.com/vernesong/OpenClash luci-app-openclash
-git_sparse_clone https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
-git_sparse_clone main https://github.com/fw876/helloworld && mvdir helloworld
-git_sparse_clone https://github.com/xiaorouji/openwrt-passwall openwrt-passwall/luci-app-passwall
+merge_package https://github.com/vernesong/OpenClash OpenClash/luci-app-openclash
+git clone https://github.com/xiaorouji/openwrt-passwall-packages.git package/openwrt-passwall
+git clone https://github.com/fw876/helloworld.git package/ssr
+git clone https://github.com/xiaorouji/openwrt-passwall.git package/passwall
