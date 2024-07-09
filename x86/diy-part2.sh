@@ -37,17 +37,39 @@ sed -i "s/<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%>/<%=pcdata(ver.d
 sed -i 's/os.date()/os.date("%Y年%m月%d日") .. " " .. translate(os.date("%A")) .. " " .. os.date("%X")/g' package/lean/autocore/files/x86/index.htm
 
 # Git稀疏克隆，只克隆指定目录到本地
-function git_sparse_clone() {
-  branch="$1" repourl="$2" && shift 2
-  git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
-  repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
-  cd $repodir && git sparse-checkout set $@
-  mv -f $@ ../package
-  cd .. && rm -rf $repodir
-}
+        function git_sparse_clone() {
+          branch="$1" rurl="$2" localdir="$3" && shift 3
+          git clone -b $branch --depth 1 --filter=blob:none --sparse $rurl $localdir
+          if [ "$?" != 0 ]; then
+            echo "error on $rurl"
+            pid="$( ps -q $$ )"
+            kill $pid
+          fi
+          cd $localdir
+          git sparse-checkout init --cone
+          git sparse-checkout set $@
+          mv -n $@ ../ || true
+          cd ..
+          rm -rf $localdir
+          }
+        function git_sparse_clone2() {
+          commitid="$1" rurl="$2" localdir="$3" && shift 3
+          git clone --filter=blob:none --sparse $rurl $localdir
+          cd $localdir
+          git checkout $commitid
+          git sparse-checkout init --cone
+          git sparse-checkout set $@
+          mv -n $@ ../ || true
+          cd ..
+          rm -rf $localdir
+          }
+        function mvdir() {
+        mv -n `find $1/* -maxdepth 0 -type d` ./
+        rm -rf $1
+        }
 
 # 添加额外插件
-git_sparse_clone master https://github.com/vernesong/OpenClash luci-app-openclash
-git_sparse_clone https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
-git_sparse_clone main https://github.com/fw876/helloworld && mvdir helloworld
-git_sparse_clone https://github.com/xiaorouji/openwrt-passwall openwrt-passwall/luci-app-passwall
+git_clone master https://github.com/vernesong/OpenClash luci-app-openclash
+git_clone https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
+git_clone main https://github.com/fw876/helloworld && mvdir helloworld
+git_clone https://github.com/xiaorouji/openwrt-passwall openwrt-passwall/luci-app-passwall
