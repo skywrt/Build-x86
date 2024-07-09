@@ -37,21 +37,15 @@ sed -i "s/<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%>/<%=pcdata(ver.d
 sed -i 's/os.date()/os.date("%Y年%m月%d日") .. " " .. translate(os.date("%A")) .. " " .. os.date("%X")/g' package/lean/autocore/files/x86/index.htm
 
 # Git稀疏克隆，只克隆指定目录到本地
-function git_sparse_clone() {
-branch="$1" rurl="$2" localdir="$3" && shift 3
-git clone -b $branch --depth 1 --filter=blob:none --sparse $rurl $localdir
-cd $localdir
-git sparse-checkout init --cone
-git sparse-checkout set $@
-mv -n $@ ../
-cd ..
-rm -rf $localdir
+function git_clone() {
+  branch="\$1"
+  repourl="\$2"
+  shift 2
+  git clone --depth=1 -b $branch --single-branch $repourl
+  repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
+  mv -f $repodir $@
 }
 
-function mvdir() {
-mv -n `find $1/* -maxdepth 0 -type d` ./
-rm -rf $1
-}
 # 添加额外插件
 git_clone master https://github.com/vernesong/OpenClash luci-app-openclash
 git_clone https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
