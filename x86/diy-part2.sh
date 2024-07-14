@@ -52,7 +52,5 @@ function drop_package(){
 rm -rf package/custom; mkdir package/custom
 
 # 添加额外插件
-merge_package https://github.com/vernesong/OpenClash OpenClash/luci-app-openclash
-git clone https://github.com/xiaorouji/openwrt-passwall-packages.git package/openwrt-passwall
-git clone https://github.com/fw876/helloworld.git package/ssr
-git clone https://github.com/xiaorouji/openwrt-passwall.git package/passwall
+git clone https://github.com/kenzok8/openwrt-packages.git package/openwrt-packages
+git clone https://github.com/kenzok8/small.git package/small
